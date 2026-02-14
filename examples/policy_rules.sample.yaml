@@ -1,0 +1,107 @@
+# SAMPLE Arbiter Policy Rules
+# This is a reference example for configuring the Nyx Protocol Arbiter policy engine.
+# Copy this file to config/policy_rules.yaml and customize for your deployment.
+#
+# Evaluated in order. First match wins.
+# Decision: approve | reject | escalate | continue (fall through to next rule)
+
+rules:
+  # --- Hard Rejects ---
+  - id: reject_obfuscated
+    name: "Reject obfuscated code"
+    condition:
+      assessment.checklist.obfuscation_detected: true
+    decision: reject
+    reasoning: "Obfuscated code is never approved automatically"
+
+  - id: reject_high_exfil
+    name: "Reject high data exfiltration risk"
+    condition:
+      assessment.checklist.data_exfiltration_risk: "high"
+    decision: reject
+    reasoning: "High data exfiltration risk detected"
+
+  - id: reject_high_privesc
+    name: "Reject high privilege escalation risk"
+    condition:
+      assessment.checklist.privilege_escalation_risk: "high"
+    decision: reject
+    reasoning: "High privilege escalation risk detected"
+
+  - id: reject_critical_vulns
+    name: "Reject if critical vulnerabilities found"
+    condition:
+      assessment.checklist.known_vuln_patterns:
+        any:
+          severity: "critical"
+    decision: reject
+    reasoning: "Critical vulnerability pattern detected"
+
+  - id: reject_critical_injection
+    name: "Reject critical prompt injection vectors"
+    condition:
+      assessment.checklist.prompt_injection_vectors:
+        any:
+          severity: "critical"
+    decision: reject
+    reasoning: "Critical prompt injection vector detected"
+
+  - id: reject_risk_score_90
+    name: "Reject risk score >= 90"
+    condition:
+      assessment.risk_score:
+        gte: 90
+    decision: reject
+    reasoning: "Risk score exceeds automatic rejection threshold"
+
+  # --- Hard Escalations ---
+  - id: escalate_tier3
+    name: "Escalate all tier 3 actions"
+    condition:
+      review_request.risk_tier: 3
+    decision: escalate
+    reasoning: "Tier 3 actions always require human confirmation"
+
+  - id: escalate_undocumented_hosts
+    name: "Escalate undocumented outbound connections"
+    condition:
+      assessment.checklist.outbound_connections:
+        any:
+          documented: false
+    decision: escalate
+    reasoning: "Undocumented outbound network connections require human review"
+
+  - id: escalate_medium_risk
+    name: "Escalate medium-high risk scores"
+    condition:
+      assessment.risk_score:
+        gte: 50
+    decision: escalate
+    reasoning: "Risk score in escalation range (50-89)"
+
+  - id: escalate_ciso_escalate
+    name: "Honor CISO escalation recommendation"
+    condition:
+      assessment.recommendation: "escalate"
+    decision: escalate
+    reasoning: "CISO recommended human escalation"
+
+  # --- Approvals ---
+  - id: approve_low_risk_ciso_approved
+    name: "Approve low-risk CISO-approved actions"
+    condition:
+      assessment.risk_score:
+        lt: 30
+      assessment.recommendation: "approve"
+      assessment.checklist.obfuscation_detected: false
+      assessment.checklist.data_exfiltration_risk: "none"
+      assessment.checklist.privilege_escalation_risk: "none"
+    decision: approve
+    reasoning: "Low risk, CISO approved, no red flags"
+
+  # --- Default: LLM Fallback ---
+  - id: fallback_llm
+    name: "LLM fallback for ambiguous cases"
+    condition: always
+    decision: escalate
+    reasoning: "No deterministic rule matched — No matching rule — escalating to human per ADR-002 (no LLM in decision path)"

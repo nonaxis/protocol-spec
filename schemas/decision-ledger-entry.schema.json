@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nyx-protocol.dev/schemas/decision-ledger-entry.schema.json",
+  "title": "Decision Ledger Entry",
+  "description": "Append-only, immutable decision record. One entry per line in decision_ledger.jsonl. Signed by Arbiter.",
+  "type": "object",
+  "required": ["decision_id", "timestamp", "statement", "rationale", "constraints_referenced", "event_links", "arbiter_signature", "chain_hash"],
+  "properties": {
+    "decision_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique decision identifier."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "statement": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "One-sentence decision statement."
+    },
+    "rationale": {
+      "type": "array",
+      "description": "2-3 bullet points explaining why.",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": { "type": "string" }
+    },
+    "constraints_referenced": {
+      "type": "array",
+      "description": "IDs of constraints that applied to this decision.",
+      "items": { "type": "string" }
+    },
+    "event_links": {
+      "type": "array",
+      "description": "IDs of events (PROPOSED, REVIEWED, APPROVED, etc.) related to this decision.",
+      "items": { "type": "string" }
+    },
+    "artifacts": {
+      "type": "array",
+      "description": "References to artifacts produced by this decision.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string" },
+          "path": { "type": "string" },
+          "hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "description": "Tags for filtering. Use 'always_include' for decisions injected every session.",
+      "items": { "type": "string" }
+    },
+    "supersedes": {
+      "type": ["string", "null"],
+      "description": "decision_id this entry supersedes, if any."
+    },
+    "arbiter_signature": {
+      "type": "string",
+      "description": "HMAC-SHA256 signature from the Arbiter over decision_id:timestamp:statement:chain_hash."
+    },
+    "chain_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256(prev_chain_hash + this_entry). Tamper-evident chain."
+    }
+  },
+  "additionalProperties": false
+}

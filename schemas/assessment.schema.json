@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://governance.local/schemas/assessment.json",
+  "title": "CISO Assessment",
+  "description": "CISO's structured security analysis of a review request",
+  "type": "object",
+  "required": ["id", "timestamp", "chain_hash", "type", "source", "payload"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "chain_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "type": {
+      "const": "assessment"
+    },
+    "source": {
+      "const": "ciso"
+    },
+    "payload": {
+      "type": "object",
+      "required": ["review_request_id", "risk_score", "recommendation", "checklist"],
+      "properties": {
+        "review_request_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "ID of the review request being assessed"
+        },
+        "risk_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "0 = no risk, 100 = certainly malicious"
+        },
+        "recommendation": {
+          "type": "string",
+          "enum": ["approve", "reject", "escalate"],
+          "description": "CISO's recommendation (Arbiter makes final call)"
+        },
+        "checklist": {
+          "type": "object",
+          "required": [
+            "outbound_connections",
+            "filesystem_writes",
+            "permission_requests",
+            "obfuscation_detected",
+            "known_vuln_patterns",
+            "prompt_injection_vectors",
+            "data_exfiltration_risk",
+            "privilege_escalation_risk"
+          ],
+          "properties": {
+            "outbound_connections": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "host": { "type": "string" },
+                  "port": { "type": "integer" },
+                  "protocol": { "type": "string" },
+                  "purpose": { "type": "string" },
+                  "documented": { "type": "boolean" }
+                }
+              }
+            },
+            "filesystem_writes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "path": { "type": "string" },
+                  "operation": { "type": "string", "enum": ["create", "modify", "delete"] },
+                  "concern": { "type": "string" }
+                }
+              }
+            },
+            "permission_requests": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "obfuscation_detected": {
+              "type": "boolean"
+            },
+            "obfuscation_details": {
+              "type": "string"
+            },
+            "known_vuln_patterns": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "pattern": { "type": "string" },
+                  "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+                  "description": { "type": "string" }
+                }
+              }
+            },
+            "prompt_injection_vectors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "location": { "type": "string" },
+                  "technique": { "type": "string" },
+                  "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] }
+                }
+              }
+            },
+            "data_exfiltration_risk": {
+              "type": "string",
+              "enum": ["none", "low", "medium", "high"]
+            },
+            "privilege_escalation_risk": {
+              "type": "string",
+              "enum": ["none", "low", "medium", "high"]
+            }
+          }
+        },
+        "concerns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "severity": { "type": "string", "enum": ["info", "warning", "critical"] },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "analysis_notes": {
+          "type": "string",
+          "description": "Free-form analysis notes (structured, not conversational)"
+        }
+      }
+    }
+  }
+}

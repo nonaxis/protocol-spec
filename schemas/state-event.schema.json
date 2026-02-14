@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nyx-protocol.dev/schemas/state-event.schema.json",
+  "title": "State Event",
+  "description": "Event sourcing events for the governance pipeline. State is derived from events, not stored directly.",
+  "type": "object",
+  "required": ["event_id", "timestamp", "event_type", "source", "chain_hash"],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": ["PROPOSED", "REVIEWED", "APPROVED", "REJECTED", "ESCALATED", "EXECUTED", "ROLLED_BACK", "STATE_PATCHED", "RECONCILED"],
+      "description": "Lifecycle event type."
+    },
+    "source": {
+      "type": "string",
+      "enum": ["operator", "ciso", "arbiter", "bus", "human"],
+      "description": "Which component emitted this event."
+    },
+    "chain_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "references": {
+      "type": "object",
+      "description": "Links to related entities.",
+      "properties": {
+        "review_request_id": { "type": "string" },
+        "assessment_id": { "type": "string" },
+        "decision_id": { "type": "string" },
+        "token_id": { "type": "string" },
+        "snapshot_id": { "type": "string" },
+        "ledger_entry_id": { "type": "string" }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "description": "Event-specific data. Shape depends on event_type.",
+      "properties": {
+        "action_type": { "type": "string" },
+        "content_hash": { "type": "string" },
+        "risk_tier": { "type": "integer" },
+        "risk_score": { "type": "integer" },
+        "verdict": { "type": "string" },
+        "token": { "type": "object" },
+        "result": { "type": "string" },
+        "error": { "type": "string" },
+        "rollback_to_snapshot": { "type": "string" },
+        "state_patch": {
+          "type": "array",
+          "description": "JSON Patch operations (for STATE_PATCHED events).",
+          "items": { "type": "object" }
+        },
+        "drift_detected": {
+          "type": "array",
+          "description": "Drift details (for RECONCILED events).",
+          "items": {
+            "type": "object",
+            "properties": {
+              "field": { "type": "string" },
+              "expected": {},
+              "actual": {},
+              "resolution": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

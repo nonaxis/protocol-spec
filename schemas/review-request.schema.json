@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://governance.local/schemas/review-request.json",
+  "title": "Review Request",
+  "description": "Operator submits a proposed action for CISO review",
+  "type": "object",
+  "required": ["id", "timestamp", "chain_hash", "type", "source", "risk_tier", "payload"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique message identifier"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp"
+    },
+    "chain_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 hash of the previous bus message (genesis: 64 zeros)"
+    },
+    "type": {
+      "const": "review_request"
+    },
+    "source": {
+      "const": "operator"
+    },
+    "risk_tier": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 3,
+      "description": "Only tier 2+ actions require review requests"
+    },
+    "payload": {
+      "type": "object",
+      "required": ["action_type", "content_hash"],
+      "properties": {
+        "action_type": {
+          "type": "string",
+          "enum": [
+            "skill_install",
+            "skill_update",
+            "exec_unfamiliar",
+            "self_modify",
+            "credential_access",
+            "outbound_network",
+            "memory_modify",
+            "prompt_modify"
+          ]
+        },
+        "content_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of the content being reviewed (code, command, diff)"
+        },
+        "code": {
+          "type": "string",
+          "description": "Base64-encoded source code (stripped of docs/comments for CISO)"
+        },
+        "command": {
+          "type": "string",
+          "description": "For exec_unfamiliar: the proposed command"
+        },
+        "diff": {
+          "type": "string",
+          "description": "For self_modify/memory_modify/prompt_modify: unified diff"
+        },
+        "permissions_requested": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["exec", "network", "filesystem", "browser", "messaging", "credential", "self_modify"]
+          }
+        },
+        "outbound_hosts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Declared outbound network destinations"
+        },
+        "skill_metadata": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "version": { "type": "string" },
+            "author": { "type": "string" },
+            "source_url": { "type": "string", "format": "uri" },
+            "clawhub_id": { "type": "string" }
+          }
+        },
+        "context": {
+          "type": "string",
+          "description": "Brief context for why the action is being proposed (no raw user messages)"
+        }
+      }
+    }
+  }
+}

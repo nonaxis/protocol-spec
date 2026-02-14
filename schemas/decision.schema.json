@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://governance.local/schemas/decision.json",
+  "title": "Arbiter Decision",
+  "description": "Final governance decision from the Arbiter",
+  "type": "object",
+  "required": ["id", "timestamp", "chain_hash", "type", "source", "payload"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "chain_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "type": {
+      "const": "decision"
+    },
+    "source": {
+      "const": "arbiter"
+    },
+    "payload": {
+      "type": "object",
+      "required": ["review_request_id", "assessment_id", "decision", "decision_method", "reasoning"],
+      "properties": {
+        "review_request_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "assessment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "decision": {
+          "type": "string",
+          "enum": ["approve", "reject", "escalate"],
+          "description": "Final decision"
+        },
+        "decision_method": {
+          "type": "string",
+          "enum": ["deterministic", "llm_fallback", "timeout_escalation"],
+          "description": "How the decision was reached"
+        },
+        "reasoning": {
+          "type": "string",
+          "description": "Structured explanation of why this decision was made"
+        },
+        "policy_rules_applied": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "rule_id": { "type": "string" },
+              "rule_name": { "type": "string" },
+              "matched": { "type": "boolean" },
+              "result": { "type": "string", "enum": ["approve", "reject", "escalate", "no_match"] }
+            }
+          }
+        },
+        "token": {
+          "$ref": "execution-token.schema.json"
+        },
+        "escalation": {
+          "type": "object",
+          "description": "Only present on escalate decisions",
+          "properties": {
+            "reason": { "type": "string" },
+            "context_for_human": { "type": "string" },
+            "timeout_minutes": { "type": "integer", "default": 30 }
+          }
+        }
+      }
+    }
+  }
+}

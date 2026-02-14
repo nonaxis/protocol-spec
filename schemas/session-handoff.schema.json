@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nyx-protocol.dev/schemas/session-handoff.schema.json",
+  "title": "Session Handoff",
+  "description": "Schema-validated handoff artifact produced at session end. Arbiter verifies before committing state updates.",
+  "type": "object",
+  "required": ["handoff_id", "session_id", "timestamp", "snapshot_id", "session_summary", "assumptions_made", "unknowns", "task_queue", "state_updates_proposed"],
+  "properties": {
+    "handoff_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "ID of the session producing this handoff."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "snapshot_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "The Canonical State snapshot this session started from."
+    },
+    "session_summary": {
+      "type": "array",
+      "description": "5-10 bullet points summarizing what happened.",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": { "type": "string" }
+    },
+    "assumptions_made": {
+      "type": "array",
+      "description": "Assumptions the agent made during this session.",
+      "items": {
+        "type": "object",
+        "required": ["statement"],
+        "properties": {
+          "statement": { "type": "string" },
+          "confidence": { "type": "string", "enum": ["low", "medium", "high"] },
+          "source": { "type": "string" }
+        }
+      }
+    },
+    "unknowns": {
+      "type": "array",
+      "description": "Open questions that need resolution.",
+      "items": {
+        "type": "object",
+        "required": ["question"],
+        "properties": {
+          "question": { "type": "string" },
+          "blocking": { "type": "array", "items": { "type": "string" }, "description": "Task IDs blocked by this unknown." },
+          "suggested_resolution": { "type": "string" }
+        }
+      }
+    },
+    "task_queue": {
+      "type": "array",
+      "description": "Tasks for the next session, ordered by priority.",
+      "items": {
+        "type": "object",
+        "required": ["id", "next_step"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "next_step": { "type": "string" },
+          "blocking": { "type": "array", "items": { "type": "string" } },
+          "estimated_minutes": { "type": "integer" }
+        }
+      }
+    },
+    "state_updates_proposed": {
+      "type": "array",
+      "description": "JSON Patch (RFC 6902) operations to apply to Canonical State.",
+      "items": {
+        "type": "object",
+        "required": ["op", "path"],
+        "properties": {
+          "op": { "type": "string", "enum": ["add", "remove", "replace", "move", "copy", "test"] },
+          "path": { "type": "string" },
+          "value": {},
+          "from": { "type": "string" }
+        }
+      }
+    },
+    "risks_noted": {
+      "type": "array",
+      "description": "Risks identified during the session.",
+      "items": {
+        "type": "object",
+        "required": ["description", "severity"],
+        "properties": {
+          "description": { "type": "string" },
+          "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+          "mitigation": { "type": "string" }
+        }
+      }
+    },
+    "events_emitted": {
+      "type": "array",
+      "description": "References to events emitted during this session.",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}

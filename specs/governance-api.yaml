@@ -1,0 +1,437 @@
+openapi: 3.1.0
+info:
+  x-implementation-status: "DESIGN TARGET — these endpoints are not yet implemented. Current PoC uses filesystem-based bus."
+  title: Nyx Protocol API
+  version: 0.1.0
+  description: |
+    Runtime execution governance for autonomous AI agents.
+    
+    Any agent framework can integrate with this API to add deterministic
+    policy enforcement, multi-instance review, and OS-level execution control.
+    
+    Four verbs: classify → submit → execute → report.
+  license:
+    name: TBD
+    url: https://example.com/license
+
+servers:
+  - url: http://localhost:8400
+    description: Local governance bus
+
+paths:
+  /governance/classify:
+    post:
+      operationId: classifyAction
+      summary: Classify an action's risk tier
+      description: |
+        Determines the governance tier for a proposed action. Classification
+        happens outside the agent to prevent a compromised agent from
+        downclassifying its own actions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClassifyRequest'
+      responses:
+        '200':
+          description: Classification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassifyResponse'
+        '400':
+          description: Invalid request
+        '503':
+          description: Governance system unavailable (fail-closed)
+
+  /governance/submit:
+    post:
+      operationId: submitAction
+      summary: Submit an action for governance review
+      description: |
+        Submits a classified action for CISO review and Arbiter decision.
+        For Tier 2+ actions, this is synchronous — the response includes
+        the approval decision and execution token (if approved).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitRequest'
+      responses:
+        '200':
+          description: Governance decision
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitResponse'
+        '400':
+          description: Invalid request
+        '403':
+          description: Action denied by policy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitResponse'
+        '408':
+          description: Human escalation timeout
+        '503':
+          description: Governance system unavailable (fail-closed)
+
+  /governance/execute:
+    post:
+      operationId: verifyExecution
+      summary: Verify token and authorize execution
+      description: |
+        The agent presents its execution token for verification before
+        executing the approved action. The governance system verifies
+        the HMAC signature, checks the nonce hasn't been used, and
+        confirms the content hash matches the approved action.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecuteRequest'
+      responses:
+        '200':
+          description: Execution authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecuteResponse'
+        '401':
+          description: Invalid or expired token
+        '409':
+          description: Nonce already used (replay attempt)
+        '503':
+          description: Governance system unavailable (fail-closed)
+
+  /governance/report:
+    post:
+      operationId: reportOutcome
+      summary: Report execution outcome
+      description: |
+        After execution completes, the agent reports the outcome.
+        This closes the governance loop and creates the final audit entry.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportRequest'
+      responses:
+        '200':
+          description: Outcome logged
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        '400':
+          description: Unknown execution ID
+        '503':
+          description: Governance system unavailable
+
+  /governance/health:
+    get:
+      operationId: healthCheck
+      summary: Governance system health
+      description: |
+        Returns the health status of all governance components.
+        Agents should check this before relying on governance decisions.
+      responses:
+        '200':
+          description: All components healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: One or more components unhealthy
+
+components:
+  schemas:
+    ClassifyRequest:
+      type: object
+      required: [action_type, command, context]
+      properties:
+        action_type:
+          type: string
+          enum: [exec, file_write, file_read, network, install, config_modify, memory_edit, skill_install]
+          description: Category of the proposed action
+        command:
+          type: string
+          description: The actual command or operation to classify
+          examples: ["echo 'hello from nyx'", "ls -la /tmp"]
+        target_path:
+          type: string
+          description: Target file/directory path (for file operations)
+        target_hosts:
+          type: array
+          items:
+            type: string
+          description: Target network hosts (for network operations)
+        context:
+          $ref: '#/components/schemas/ActionContext'
+
+    ActionContext:
+      type: object
+      required: [agent_id, session_id, framework]
+      properties:
+        agent_id:
+          type: string
+          description: Unique identifier for the agent instance
+        session_id:
+          type: string
+          format: uuid
+          description: Current session identifier
+        user_id:
+          type: string
+          description: Human user associated with this agent (if any)
+        framework:
+          type: string
+          enum: [nyx, autogen, langchain, crewai, custom]
+          description: Agent framework in use
+        source:
+          type: string
+          enum: [user_request, autonomous, triggered, delegated]
+          description: What initiated this action
+          default: autonomous
+        parent_task_id:
+          type: string
+          format: uuid
+          description: Parent task ID (for delegated actions)
+
+    ClassifyResponse:
+      type: object
+      required: [classification_id, tier, tier_name, governance_required]
+      properties:
+        classification_id:
+          type: string
+          format: uuid
+        tier:
+          type: integer
+          enum: [0, 1, 2, 3]
+        tier_name:
+          type: string
+          enum: [Passive, Active, Sensitive, Critical]
+        governance_required:
+          type: string
+          enum: [none, async, sync, sync_with_human]
+          description: Level of governance review required
+        flags:
+          type: array
+          items:
+            type: string
+          description: Specific risk flags detected during classification
+          examples: [["piped_execution", "external_url", "unknown_binary"]]
+
+    SubmitRequest:
+      type: object
+      required: [classification_id, action]
+      properties:
+        classification_id:
+          type: string
+          format: uuid
+        action:
+          type: object
+          required: [type, content, content_hash]
+          properties:
+            type:
+              type: string
+            content:
+              type: string
+              description: Full action content (command, file contents, etc.)
+            content_hash:
+              type: string
+              pattern: '^sha256:[a-f0-9]{64}$'
+              description: SHA-256 hash of the action content
+            working_dir:
+              type: string
+            env:
+              type: object
+              additionalProperties:
+                type: string
+        justification:
+          type: string
+          description: Agent's stated reason for this action
+
+    SubmitResponse:
+      type: object
+      required: [decision, decision_id]
+      properties:
+        decision:
+          type: string
+          enum: [APPROVED, DENIED, ESCALATED, NEEDS_INFO]
+        decision_id:
+          type: string
+          format: uuid
+        token:
+          $ref: '#/components/schemas/ExecutionToken'
+        reason:
+          type: string
+          description: Human-readable decision rationale
+        policy_rule:
+          type: string
+          description: Policy rule that triggered this decision
+        alternatives:
+          type: array
+          items:
+            type: object
+            properties:
+              description:
+                type: string
+              command:
+                type: string
+          description: Suggested safe alternatives (if denied)
+        escalation:
+          type: object
+          properties:
+            timeout_minutes:
+              type: integer
+            questions:
+              type: array
+              items:
+                type: string
+          description: Escalation details (if escalated)
+        audit_ref:
+          type: string
+          description: Chain hash reference for this decision
+
+    ExecutionToken:
+      type: object
+      required: [token_id, nonce, expires_at, scope, hmac_signature]
+      properties:
+        token_id:
+          type: string
+          format: uuid
+        nonce:
+          type: string
+          format: uuid
+          description: Single-use nonce for replay protection
+        expires_at:
+          type: string
+          format: date-time
+        scope:
+          type: object
+          required: [content_hash]
+          properties:
+            content_hash:
+              type: string
+              pattern: '^sha256:[a-f0-9]{64}$'
+            allowed_hosts:
+              type: array
+              items:
+                type: string
+            allowed_paths:
+              type: array
+              items:
+                type: string
+            max_duration_seconds:
+              type: integer
+        hmac_signature:
+          type: string
+          description: HMAC-SHA256 of token_id:nonce:expires_at:scope
+
+    ExecuteRequest:
+      type: object
+      required: [token_id, nonce, content_hash, hmac_signature]
+      properties:
+        token_id:
+          type: string
+          format: uuid
+        nonce:
+          type: string
+          format: uuid
+        content_hash:
+          type: string
+          pattern: '^sha256:[a-f0-9]{64}$'
+        hmac_signature:
+          type: string
+
+    ExecuteResponse:
+      type: object
+      required: [verified, execution_id]
+      properties:
+        verified:
+          type: boolean
+        execution_id:
+          type: string
+          format: uuid
+        constraints:
+          type: object
+          properties:
+            timeout_seconds:
+              type: integer
+            network_hosts:
+              type: array
+              items:
+                type: string
+            filesystem_paths:
+              type: array
+              items:
+                type: string
+        denial_reason:
+          type: string
+          description: Present only if verified=false
+
+    ReportRequest:
+      type: object
+      required: [execution_id, outcome]
+      properties:
+        execution_id:
+          type: string
+          format: uuid
+        outcome:
+          type: string
+          enum: [success, failure, timeout, aborted]
+        exit_code:
+          type: integer
+        output_summary:
+          type: string
+          maxLength: 4096
+          description: Truncated output for audit (not full output)
+        duration_ms:
+          type: integer
+
+    ReportResponse:
+      type: object
+      required: [logged]
+      properties:
+        logged:
+          type: boolean
+        audit_ref:
+          type: string
+
+    HealthResponse:
+      type: object
+      required: [status, components]
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unavailable]
+        components:
+          type: object
+          properties:
+            bus:
+              $ref: '#/components/schemas/ComponentHealth'
+            ciso:
+              $ref: '#/components/schemas/ComponentHealth'
+            arbiter:
+              $ref: '#/components/schemas/ComponentHealth'
+            audit:
+              $ref: '#/components/schemas/ComponentHealth'
+
+    ComponentHealth:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unavailable]
+        last_seen:
+          type: string
+          format: date-time
+        message:
+          type: string

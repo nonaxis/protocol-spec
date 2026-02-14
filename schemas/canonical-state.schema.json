@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nyx-protocol.dev/schemas/canonical-state.schema.json",
+  "title": "Canonical State",
+  "description": "Minimum durable facts needed to resume an agent session consistently. Authoritative source of truth — only updated via Arbiter-approved patches.",
+  "type": "object",
+  "required": ["version", "snapshot_id", "prev_snapshot_id", "state_hash", "timestamp", "identity", "active_objectives", "constraints", "known_systems", "approved_skills", "open_tasks", "last_decisions"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "description": "Schema version for forward compatibility.",
+      "const": 1
+    },
+    "snapshot_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for this snapshot."
+    },
+    "prev_snapshot_id": {
+      "type": ["string", "null"],
+      "description": "Previous snapshot ID. Null for genesis."
+    },
+    "state_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 of the canonical fields (excluding meta fields)."
+    },
+    "arbiter_policy_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Hash of the policy ruleset that approved this state."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 timestamp of this snapshot."
+    },
+    "identity": {
+      "type": "object",
+      "description": "Agent identity and role.",
+      "required": ["agent_id", "role"],
+      "properties": {
+        "agent_id": { "type": "string" },
+        "role": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "active_objectives": {
+      "type": "array",
+      "description": "Current goals the agent is pursuing.",
+      "items": {
+        "type": "object",
+        "required": ["id", "statement", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "statement": { "type": "string" },
+          "status": { "type": "string", "enum": ["active", "blocked", "completed", "abandoned"] },
+          "blocking_reason": { "type": "string" },
+          "priority": { "type": "integer", "minimum": 1, "maximum": 5 }
+        }
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "description": "Active constraints on agent behavior (e.g., Peace Mode, rate limits).",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "active"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "active": { "type": "boolean" },
+          "parameters": { "type": "object" }
+        }
+      }
+    },
+    "known_systems": {
+      "type": "array",
+      "description": "Infrastructure topology the agent knows about.",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "type"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "type": { "type": "string" },
+          "address": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "approved_skills": {
+      "type": "array",
+      "description": "Skills blessed by the Arbiter for use.",
+      "items": {
+        "type": "object",
+        "required": ["name", "version", "approved_at"],
+        "properties": {
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "approved_at": { "type": "string", "format": "date-time" },
+          "content_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+        }
+      }
+    },
+    "open_tasks": {
+      "type": "array",
+      "description": "Tasks with IDs and status.",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "status": { "type": "string", "enum": ["pending", "in_progress", "blocked", "done"] },
+          "next_step": { "type": "string" },
+          "blocking": { "type": "array", "items": { "type": "string" } },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "last_decisions": {
+      "type": "array",
+      "description": "Recent decision references (hashes + timestamps). Full decisions live in the ledger.",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "required": ["decision_id", "timestamp"],
+        "properties": {
+          "decision_id": { "type": "string" },
+          "statement": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "memory_tiers": {
+      "type": "object",
+      "description": "TTL tiers for memory items.",
+      "properties": {
+        "pinned": {
+          "type": "array",
+          "description": "No TTL — constraints, identity, infra, ledger.",
+          "items": { "type": "string" }
+        },
+        "active": {
+          "type": "array",
+          "description": "30-90 day TTL — projects, runbooks, patterns.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": { "type": "string" },
+              "expires_at": { "type": "string", "format": "date-time" }
+            }
+          }
+        },
+        "ephemeral": {
+          "type": "array",
+          "description": "1-7 day TTL — scratch, transient notes.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": { "type": "string" },
+              "expires_at": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

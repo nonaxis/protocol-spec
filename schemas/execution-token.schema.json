@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://governance.local/schemas/execution-token.json",
+  "title": "Execution Token",
+  "description": "Token issued by the Arbiter to authorize a single, scope-pinned action. Intended for fail-closed verification by the Operator.",
+  "type": "object",
+  "required": ["token_id", "nonce", "expires_at", "scope", "hmac_signature"],
+  "properties": {
+    "token_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique token identifier"
+    },
+    "nonce": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Single-use nonce for replay protection"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC expiry time"
+    },
+    "scope": {
+      "type": "object",
+      "required": ["content_hash"],
+      "properties": {
+        "content_hash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "description": "Pins token to the approved action payload hash"
+        },
+        "allowed_hosts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Optional allowlist of network hosts"
+        },
+        "allowed_paths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Optional allowlist of filesystem paths"
+        },
+        "max_duration_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Optional max duration for the allowed action"
+        }
+      },
+      "additionalProperties": false
+    },
+    "hmac_signature": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Hex HMAC-SHA256 over the canonical token string"
+    }
+  },
+  "additionalProperties": false
+}
