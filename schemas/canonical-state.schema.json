@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nyx-protocol.dev/schemas/canonical-state.schema.json",
+  "$id": "https://nonaxis.dev/schemas/canonical-state.schema.json",
   "title": "Canonical State",
   "description": "Minimum durable facts needed to resume an agent session consistently. Authoritative source of truth — only updated via Arbiter-approved patches.",
   "type": "object",

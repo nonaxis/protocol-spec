@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   x-implementation-status: "DESIGN TARGET — these endpoints are not yet implemented. Current PoC uses filesystem-based bus."
-  title: Nyx Protocol API
+  title: Nonaxis API
   version: 0.1.0
   description: |
     Runtime execution governance for autonomous AI agents.
@@ -163,7 +163,7 @@ components:
         command:
           type: string
           description: The actual command or operation to classify
-          examples: ["echo 'hello from nyx'", "ls -la /tmp"]
+          examples: ["echo 'hello from nonaxis'", "ls -la /tmp"]
         target_path:
           type: string
           description: Target file/directory path (for file operations)
@@ -191,7 +191,7 @@ components:
           description: Human user associated with this agent (if any)
         framework:
           type: string
-          enum: [nyx, autogen, langchain, crewai, custom]
+          enum: [nonaxis, autogen, langchain, crewai, custom]
           description: Agent framework in use
         source:
           type: string

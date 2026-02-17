@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **Operator** is the user-facing Nyx instance with full tools and OS sandbox. It implements self-governance by submitting high-risk actions through a review pipeline before execution.
+The **Operator** is the user-facing Nonaxis instance with full tools and OS sandbox. It implements self-governance by submitting high-risk actions through a review pipeline before execution.
 
 This guide covers the Operator's integration with the Arbiter state API and governance pipeline.
 
@@ -11,7 +11,7 @@ This guide covers the Operator's integration with the Arbiter state API and gove
 ```
 ┌─────────────────────────────────────────────────┐
 │                   Operator                       │
-│  (Full-featured Nyx instance)              │
+│  (Full-featured Nonaxis instance)              │
 │                                                  │
 │  ┌──────────────────────────────────────────┐  │
 │  │         OperatorClient                   │  │
@@ -433,7 +433,7 @@ GOVERNANCE_BASE_DIR=/tmp/demo python demo/simple_operator_demo.py
 ```yaml
 services:
   operator:
-    image: nyx-operator:latest
+    image: nonaxis-operator:latest
     volumes:
       - operator-workspace:/workspace
       - governance-pending:/var/lib/governance/pending-review:rw
@@ -455,7 +455,7 @@ services:
 ```
 #include <tunables/global>
 
-/usr/local/bin/nyx {
+/usr/local/bin/nonaxis {
   #include <abstractions/base>
   
   # Workspace

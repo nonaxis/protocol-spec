@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nyx-protocol.dev/schemas/state-event.schema.json",
+  "$id": "https://nonaxis.dev/schemas/state-event.schema.json",
   "title": "State Event",
   "description": "Event sourcing events for the governance pipeline. State is derived from events, not stored directly.",
   "type": "object",

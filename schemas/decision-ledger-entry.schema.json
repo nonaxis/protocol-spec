@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nyx-protocol.dev/schemas/decision-ledger-entry.schema.json",
+  "$id": "https://nonaxis.dev/schemas/decision-ledger-entry.schema.json",
   "title": "Decision Ledger Entry",
   "description": "Append-only, immutable decision record. One entry per line in decision_ledger.jsonl. Signed by Arbiter.",
   "type": "object",

@@ -1,5 +1,5 @@
 # SAMPLE Arbiter Policy Rules
-# This is a reference example for configuring the Nyx Protocol Arbiter policy engine.
+# This is a reference example for configuring the Nonaxis Arbiter policy engine.
 # Copy this file to config/policy_rules.yaml and customize for your deployment.
 #
 # Evaluated in order. First match wins.

@@ -1,7 +1,7 @@
-apiVersion: sandbox.nyx/v2
+apiVersion: sandbox.nonaxis/v2
 kind: LLMTaskExecutionSandboxSpec
 metadata:
-  name: nyx-llm-sandbox
+  name: nonaxis-llm-sandbox
   version: 2.0.0
   purpose: "Deterministic, capability-scoped tool-loop execution for LLM agents with prompt-injection immunity guarantees"
   source: "GPT adversarial design session 2026-02-13"
@@ -59,7 +59,7 @@ taskIntake:
     required: true
     signature:
       alg: "HMAC-SHA256"
-      keyId: "nyx-task-signing-v1"
+      keyId: "nonaxis-task-signing-v1"
       signedFields:
         - header
         - task
@@ -81,7 +81,7 @@ taskIntake:
 capabilityTokens:
   tokenFormat: "PASETO"
   version: "v4.local"
-  issuer: "nyx-orchestrator"
+  issuer: "nonaxis-orchestrator"
   audience: ["agent-forge", "agent-architect", "agent-custom"]
   ttlSeconds: 600
   binding:
@@ -165,7 +165,7 @@ secretIsolation:
   allowedSecretAccess:
     mechanism: "broker"
     broker:
-      endpoint: "unix:///run/nyx/secret-broker.sock"
+      endpoint: "unix:///run/nonaxis/secret-broker.sock"
       auth:
         mTLS: false
         peerCred: true
@@ -255,7 +255,7 @@ toolLoop:
     evaluator: "external_policy_engine"
     engine:
       type: "rego"
-      bundlePath: "/etc/nyx/policy/agent_tool.rego"
+      bundlePath: "/etc/nonaxis/policy/agent_tool.rego"
       decisionInputs:
         - "capability_token_claims"
         - "requested_tool_call"
@@ -381,7 +381,7 @@ outputControls:
 ###############################################################################
 audit:
   local:
-    path: "/var/log/nyx-agent/audit.jsonl"
+    path: "/var/log/nonaxis-agent/audit.jsonl"
     permissions: "0640"
     hashChain:
       enabled: true

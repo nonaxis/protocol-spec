@@ -19,7 +19,7 @@
 
 ## Proposal: Non-Droppable Work via Structured Rejection + Arbiter-Owned State Machine
 
-### Problem (observed in Nyx + our governance layer)
+### Problem (observed in Nonaxis + our governance layer)
 
 When a specialist (CISO, finance, logistics, etc.) rejects a request, the work can "fall on the floor" because the system treats rejection as terminal. In real orgs, rejection produces *routing*: ask for info, re-scope, reassign, defer, or escalate.
 

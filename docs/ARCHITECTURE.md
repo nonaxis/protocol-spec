@@ -2,7 +2,7 @@
 
 ## Overview
 
-Three air-gapped Nyx instances communicate through a controlled message bus to implement inner governance — a self-policing architecture where specialized agents challenge, review, and constrain each other before actions reach the outside world.
+Three air-gapped Nonaxis instances communicate through a controlled message bus to implement inner governance — a self-policing architecture where specialized agents challenge, review, and constrain each other before actions reach the outside world.
 
 ```
 ┌─────────────┐     ┌──────────────┐     ┌──────────────┐

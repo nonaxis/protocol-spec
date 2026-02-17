@@ -1,6 +1,6 @@
-# Contributing to Nyx Protocol
+# Contributing to Nonaxis
 
-We welcome contributions to Nyx Protocol! This document outlines how to contribute to the project.
+We welcome contributions to Nonaxis! This document outlines how to contribute to the project.
 
 ## How to Contribute
 

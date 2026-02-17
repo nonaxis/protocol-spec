@@ -1,19 +1,19 @@
-# Nyx Protocol — Quick Start
+# Nonaxis — Quick Start
 
 ## What Is This?
 
-Nyx Protocol is a governance system for AI agents with system access. Three separate agent instances (Operator, CISO, Arbiter) challenge each other before actions execute. The Operator has tools but must request approval. The CISO reviews code for security risks. The Arbiter applies deterministic policy rules and issues time-limited execution tokens. Enforcement works at any layer — kernel (AppArmor + nftables), container (seccomp + eBPF), or application (process isolation + hooks). Same protocol everywhere. Patent-pending multi-instance architecture designed for AI agents with shell/file/network access.
+Nonaxis is a governance system for AI agents with system access. Three separate agent instances (Operator, CISO, Arbiter) challenge each other before actions execute. The Operator has tools but must request approval. The CISO reviews code for security risks. The Arbiter applies deterministic policy rules and issues time-limited execution tokens. Enforcement works at any layer — kernel (AppArmor + nftables), container (seccomp + eBPF), or application (process isolation + hooks). Same protocol everywhere. Patent-pending multi-instance architecture designed for AI agents with shell/file/network access.
 
 ## The Problem It Solves
 
-AI agent frameworks give agents powerful tools (shell, file writes, API calls, package installs) but don't govern what they do at runtime. Prompt-level guardrails are bypassable. Single-process supervisors share a trust boundary with the agent. Human-in-the-loop means clicking "approve" on actions you can't fully evaluate. Nyx solves this with separation of duties: the agent that proposes actions can't approve them, the agent that reviews code can't execute it, and the decision engine is deterministic (no LLM in the approval path). Every action is audited, every token is time-limited and scope-pinned, and the audit trail is tamper-evident via chain hashing.
+AI agent frameworks give agents powerful tools (shell, file writes, API calls, package installs) but don't govern what they do at runtime. Prompt-level guardrails are bypassable. Single-process supervisors share a trust boundary with the agent. Human-in-the-loop means clicking "approve" on actions you can't fully evaluate. Nonaxis solves this with separation of duties: the agent that proposes actions can't approve them, the agent that reviews code can't execute it, and the decision engine is deterministic (no LLM in the approval path). Every action is audited, every token is time-limited and scope-pinned, and the audit trail is tamper-evident via chain hashing.
 
 ## Run the Demo (Under 2 Minutes)
 
 ```bash
 # Clone and set up
-git clone https://github.com/philg0rman/nyx-protocol.git
-cd nyx-protocol
+git clone https://github.com/philg0rman/nonaxis.git
+cd nonaxis
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 
@@ -50,7 +50,7 @@ The demo shows the Operator client API, the governance workflow, and token-based
 - **Problem Statement:** [`docs/PROBLEM-STATEMENT.md`](docs/PROBLEM-STATEMENT.md) — Threat landscape and motivation
 - **Patent:** US Provisional 63/980,205 — Multi-instance governance architecture
 - **NIST RFI Submission:** [Docket NIST-2025-0035](https://www.regulations.gov) — Governance recommendations for AI agents
-- **GitHub:** https://github.com/philg0rman/nyx-protocol
+- **GitHub:** https://github.com/philg0rman/nonaxis
 - **Tests:** 136 passing — run `pytest` to verify all components
 - **Full Demo:** `python3 demo/run_demo.py` (requires services: `bash demo/start_services.sh`)
 
@@ -92,4 +92,4 @@ python3 demo/run_demo.py       # Terminal 2
 ---
 
 **License:** Apache 2.0  
-**Copyright:** 2026 Nyx Protocol LLC
+**Copyright:** 2026 Nonaxis LLC

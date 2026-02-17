@@ -84,4 +84,4 @@ The question isn't whether AI agents need governance. The question is why we're 
 
 ---
 
-*This document describes the foundational thinking behind the Nyx Protocol project. It is not a pitch or a product description. It is an attempt to articulate why institutional design — not better models, not smarter filters, not more guardrails — is the right frame for the problem of AI agent safety.*
+*This document describes the foundational thinking behind the Nonaxis project. It is not a pitch or a product description. It is an attempt to articulate why institutional design — not better models, not smarter filters, not more guardrails — is the right frame for the problem of AI agent safety.*

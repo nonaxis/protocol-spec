@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nyx-protocol.dev/schemas/session-handoff.schema.json",
+  "$id": "https://nonaxis.dev/schemas/session-handoff.schema.json",
   "title": "Session Handoff",
   "description": "Schema-validated handoff artifact produced at session end. Arbiter verifies before committing state updates.",
   "type": "object",

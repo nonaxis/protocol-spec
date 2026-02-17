@@ -1,4 +1,4 @@
-# Nyx Protocol
+# Nonaxis
 
 > **Institutional design for artificial cognition**
 
@@ -6,7 +6,7 @@ AI agents now have shell access, file system access, and the ability to install 
 
 We wouldn't design a human organization this way. Why do we design AI agents this way?
 
-**Nyx Protocol** is a standardized governance architecture that applies centuries of institutional design — separation of duties, independent oversight, deterministic enforcement, fail-safe defaults — to AI agent execution. Three isolated instances with different capabilities challenge and constrain each other. A deterministic policy engine makes enforcement decisions. Execution tokens are cryptographically bound to approved actions and verified at the OS level.
+**Nonaxis** is a standardized governance architecture that applies centuries of institutional design — separation of duties, independent oversight, deterministic enforcement, fail-safe defaults — to AI agent execution. Three isolated instances with different capabilities challenge and constrain each other. A deterministic policy engine makes enforcement decisions. Execution tokens are cryptographically bound to approved actions and verified at the OS level.
 
 No single agent holds unilateral power over consequential actions. Not because AI is dangerous, but because *any* autonomous actor — human or artificial — operating without institutional constraints will eventually cause harm.
 
@@ -58,7 +58,7 @@ When no rule covers a situation, the Arbiter escalates to a human. When a human 
 
 4. **Content-hash-bound execution tokens** — The Arbiter issues time-limited, scope-pinned HMAC tokens tied to the exact action content. OS-level enforcement verifies tokens before execution. Replay attacks and token reuse are cryptographically prevented.
 
-5. **Framework-agnostic** — Not Nyx-specific, not AutoGen-specific. Any agent framework can integrate via the governance bus API (`classify`, `submit`, `execute`, `report`).
+5. **Framework-agnostic** — Not Nonaxis-specific, not AutoGen-specific. Any agent framework can integrate via the governance bus API (`classify`, `submit`, `execute`, `report`).
 
 ---
 
@@ -66,8 +66,8 @@ When no rule covers a situation, the Arbiter escalates to a human. When a human 
 
 ```bash
 # Clone and set up
-git clone https://github.com/philg0rman/nyx-protocol.git
-cd nyx-protocol
+git clone https://github.com/philg0rman/nonaxis.git
+cd nonaxis
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 
@@ -130,7 +130,7 @@ Full architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 🚧 **In progress:**  
 - Kernel enforcement layer (AppArmor profiles, nftables rules)
-- Nyx integration module
+- Nonaxis integration module
 - Production hardening (mutual TLS, secrets management)
 
 ❌ **Not ready:**  
@@ -146,7 +146,7 @@ See [STATUS.md](STATUS.md) for detailed component status.
 
 - **Not production-ready.** This is a research prototype. It has survived adversarial reviews and passes 136 tests, but it has never governed a real agent in production.
 - **Not a prompt guardrail.** We don't filter LLM inputs or outputs. We govern what agents *do* — shell commands, file writes, network requests.
-- **Not Nyx-specific.** The architecture is agent-framework agnostic. Nyx is the first integration target.
+- **Not Nonaxis-specific.** The architecture is agent-framework agnostic. Nonaxis is the first integration target.
 - **Not magic.** If you give an AI agent root access to production servers, no governance layer can fully protect you. This reduces risk; it doesn't eliminate it.
 
 ---
@@ -195,16 +195,7 @@ Apache License 2.0. See [LICENSE](LICENSE) for full text.
 
 Contributions require DCO sign-off (Developer Certificate of Origin). See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Copyright 2026 Nyx Protocol LLC
+Copyright 2026 Nonaxis LLC
 
 ---
 
-## Why "Nyx"?
-
-In Greek mythology, Nyx is the goddess of night — primordial, powerful, feared even by Zeus. The Arbiter *nixes* bad behavior before it executes. The name reflects the protocol's role: a foundational constraint that even powerful agents must respect.
-
----
-
-**This is a research prototype.** It may be impractical, too slow, or solving the wrong problem. But the problem is real: autonomous agents are getting root access today, and the governance gap is growing.
-
-The question isn't whether AI agents need institutional design. The question is why we're building them without it.

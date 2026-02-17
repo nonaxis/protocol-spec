@@ -8,14 +8,14 @@
 
 ## Problem
 
-The governance architecture currently assumes Nyx as the agent framework. The Operator's interceptor, the skill format, and the SOUL.md-based configuration are all Nyx-specific. This limits the addressable market to one framework and makes us a plugin, not a platform.
+The governance architecture currently assumes Nonaxis as the agent framework. The Operator's interceptor, the skill format, and the SOUL.md-based configuration are all Nyx-specific. This limits the addressable market to one framework and makes us a plugin, not a platform.
 
-Per ADR-011: "If this only works with Nyx, it's a feature. If it works with AutoGen, CrewAI, LangChain — it's infrastructure."
+Per ADR-011: "If this only works with Nonaxis, it's a feature. If it works with AutoGen, CrewAI, LangChain — it's infrastructure."
 
 ## Goal
 
 Define a minimal API surface that any agent framework can implement to participate in governance. The API should be:
-- Framework-agnostic (no Nyx assumptions)
+- Framework-agnostic (no Nonaxis assumptions)
 - Transport-agnostic (HTTP, Unix socket, filesystem — adapter's choice)
 - Simple enough that an integration takes hours, not weeks
 - Complete enough that governance guarantees hold
@@ -49,7 +49,7 @@ Agent asks: "What tier is this action?"
     "agent_id": "operator-1",
     "session_id": "uuid",
     "user_id": "optional",
-    "framework": "nyx|autogen|langchain|crewai|custom",
+    "framework": "nonaxis|autogen|langchain|crewai|custom",
     "source": "user_request|autonomous|triggered"
   }
 }
@@ -156,8 +156,8 @@ Agent reports execution outcome.
 
 Each agent framework needs a thin adapter that hooks into its tool execution pipeline:
 
-### Nyx Adapter
-Hook into the exec/tool pipeline. When Nyx calls a tool, intercept → classify → submit → execute with token → report.
+### Nonaxis Adapter
+Hook into the exec/tool pipeline. When Nonaxis calls a tool, intercept → classify → submit → execute with token → report.
 
 ### LangChain Adapter
 Wrap `BaseTool.run()`. Before execution, call governance API. LangChain's `CallbackHandler` can also be used for async audit.
@@ -179,7 +179,7 @@ Any framework that can make HTTP calls before executing tools can integrate. The
 - The existing bus/orchestrator becomes the backend for these endpoints
 
 ### Phase 3
-- Build the first non-Nyx adapter (LangChain or AutoGen)
+- Build the first non-Nonaxis adapter (LangChain or AutoGen)
 - Publish the API spec as a standalone document
 - The spec becomes the "protocol" that frameworks implement
 

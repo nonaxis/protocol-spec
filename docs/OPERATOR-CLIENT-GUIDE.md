@@ -1,6 +1,6 @@
 # Operator Client Integration Guide
 
-**Audience:** Developers integrating the Nyx Protocol governance pipeline into AI agents (Nyx, etc.)
+**Audience:** Developers integrating the Nonaxis governance pipeline into AI agents (Nyx, etc.)
 
 ---
 
@@ -12,7 +12,7 @@
 # Add src/ to Python path
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path("/path/to/nyx-protocol/src")))
+sys.path.insert(0, str(Path("/path/to/nonaxis/src")))
 
 from governance.operator.client import OperatorClient
 from governance.config import GovernanceSettings
