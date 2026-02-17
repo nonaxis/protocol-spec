@@ -12,7 +12,7 @@ AI agent frameworks give agents powerful tools (shell, file writes, API calls, p
 
 ```bash
 # Clone and set up
-git clone https://github.com/philg0rman/nonaxis.git
+git clone https://github.com/nonaxis/protocol.git
 cd nonaxis
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
@@ -50,7 +50,7 @@ The demo shows the Operator client API, the governance workflow, and token-based
 - **Problem Statement:** [`docs/PROBLEM-STATEMENT.md`](docs/PROBLEM-STATEMENT.md) — Threat landscape and motivation
 - **Patent:** US Provisional 63/980,205 — Multi-instance governance architecture
 - **NIST RFI Submission:** [Docket NIST-2025-0035](https://www.regulations.gov) — Governance recommendations for AI agents
-- **GitHub:** https://github.com/philg0rman/nonaxis
+- **GitHub:** https://github.com/nonaxis/protocol
 - **Tests:** 136 passing — run `pytest` to verify all components
 - **Full Demo:** `python3 demo/run_demo.py` (requires services: `bash demo/start_services.sh`)
 

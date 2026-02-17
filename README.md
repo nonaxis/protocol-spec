@@ -66,7 +66,7 @@ When no rule covers a situation, the Arbiter escalates to a human. When a human 
 
 ```bash
 # Clone and set up
-git clone https://github.com/philg0rman/nonaxis.git
+git clone https://github.com/nonaxis/protocol.git
 cd nonaxis
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
