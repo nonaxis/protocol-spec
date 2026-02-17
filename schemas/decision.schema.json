@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://governance.local/schemas/decision.json",
+  "$id": "https://spec.nonaxis.ai/schemas/decision.json",
   "title": "Arbiter Decision",
   "description": "Final governance decision from the Arbiter",
   "type": "object",

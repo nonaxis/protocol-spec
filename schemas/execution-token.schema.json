@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://governance.local/schemas/execution-token.json",
+  "$id": "https://spec.nonaxis.ai/schemas/execution-token.json",
   "title": "Execution Token",
   "description": "Token issued by the Arbiter to authorize a single, scope-pinned action. Intended for fail-closed verification by the Operator.",
   "type": "object",

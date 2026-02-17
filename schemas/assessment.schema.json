@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://governance.local/schemas/assessment.json",
+  "$id": "https://spec.nonaxis.ai/schemas/assessment.json",
   "title": "CISO Assessment",
   "description": "CISO's structured security analysis of a review request",
   "type": "object",

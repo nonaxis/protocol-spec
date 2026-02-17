@@ -390,7 +390,7 @@ audit:
   remoteSink:
     enabled: true
     type: "append-only-http"
-    endpoint: "https://audit-sink.local/ingest"
+    endpoint: "https://audit.nonaxis.ai/ingest"
     auth: "mTLS"
     retry:
       backoff: "exponential"
