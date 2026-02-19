@@ -29,7 +29,6 @@ Operator                    Bus (Caddy)                CISO                    A
 | `/governance/decision` | POST | Arbiter | Operator | decision.schema.json |
 | `/governance/escalate-to-human` | POST | Arbiter | Operator | decision.schema.json (decision=escalate) |
 | `/health` | GET | Any | Arbiter | Health check |
-| `/reload-rules` | POST | Admin | Arbiter | Hot-reload policy rules |
 
 ## Schema Validation
 

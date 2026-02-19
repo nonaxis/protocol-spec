@@ -18,14 +18,16 @@ Tokens are HMAC-signed, include a nonce for replay protection, a content_hash pi
 To prevent Python/Bash mismatch, the HMAC input MUST be computed over this exact canonical string:
 
 ```
-token_id:nonce:expires_at:content_hash:allowed_hosts_csv:allowed_paths_csv:max_duration_seconds
+token_id:nonce:expires_at:scope_json
 ```
 
+Where `scope_json` is the JSON-serialized scope object with **keys sorted alphabetically** (`json.dumps(scope, sort_keys=True)`).
+
 Rules:
-- `expires_at` is RFC3339 UTC (e.g., `2026-02-14T18:00:00Z`)
-- `allowed_hosts_csv` is hosts joined by `,` in list order (empty string if omitted)
-- `allowed_paths_csv` is paths joined by `,` in list order (empty string if omitted)
-- `max_duration_seconds` is an integer, or empty string if omitted
+- `expires_at` is RFC3339 UTC (e.g., `2026-02-14T18:00:00+00:00`)
+- `scope_json` contains: `action_type`, `allowed_hosts`, `content_hash` (and any other scope fields), serialized with `sort_keys=True` and no extra whitespace
+- In Python: `f"{token_id}:{nonce}:{expires_at}:{json.dumps(scope.model_dump(), sort_keys=True)}"`
+- In Bash/other languages: replicate the same JSON key ordering and separator format (`, ` between items, `: ` between key-value pairs)
 
 ### Test vector (for cross-language parity)
 
@@ -34,18 +36,15 @@ Rules:
 | Secret (ASCII) | `test_hmac_secret` |
 | token_id | `11111111-1111-1111-1111-111111111111` |
 | nonce | `22222222-2222-2222-2222-222222222222` |
-| expires_at | `2026-02-14T18:00:00Z` |
-| content_hash | `sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` |
-| allowed_hosts | `["api.github.com"]` |
-| allowed_paths | `["/tmp"]` |
-| max_duration_seconds | `60` |
+| expires_at | `2026-02-14T18:00:00+00:00` |
+| scope | `{"action_type": "exec_unfamiliar", "allowed_hosts": ["api.github.com"], "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}` |
 
 Canonical string:
 ```
-11111111-1111-1111-1111-111111111111:22222222-2222-2222-2222-222222222222:2026-02-14T18:00:00Z:sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:api.github.com:/tmp:60
+11111111-1111-1111-1111-111111111111:22222222-2222-2222-2222-222222222222:2026-02-14T18:00:00+00:00:{"action_type": "exec_unfamiliar", "allowed_hosts": ["api.github.com"], "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
 ```
 
-Expected HMAC-SHA256 (hex): `a0bea13e1887bdcff8f05e446c848a4a381e2b8d6a26ebcf20cf9924bb759501`
+Expected HMAC-SHA256 (hex): `13d08030e37fa1610d9ae3172ee342b460dd01e9371a4664bd1d86ae998690a9`
 
 This directly resolves the "Python generator vs bash verifier" mismatch by making the canonical string + test vector explicit.
 

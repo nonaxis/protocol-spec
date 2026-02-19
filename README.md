@@ -138,7 +138,7 @@ Full architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - Non-Linux platforms
 - Real-world validation (zero customers)
 
-See [STATUS.md](STATUS.md) for detailed component status.
+See [ROADMAP.md](ROADMAP.md) for detailed project status and timeline.
 
 ---
 
@@ -171,7 +171,17 @@ See [STATUS.md](STATUS.md) for detailed component status.
 ## Project Structure
 
 ```
-src/governance/         # Python package (Apache 2.0)
+docs/                   # Architecture, ADRs, threat model
+  decisions/            # Architecture Decision Records
+  proposals/            # Active proposals (NIST RFI, etc.)
+schemas/                # JSON schemas for bus messages
+specs/                  # OpenAPI spec, sandbox spec
+examples/               # Sample policy rules
+```
+
+**Reference implementation** ([nonaxis/protocol](https://github.com/nonaxis/protocol)):
+```
+src/governance/         # Python package
   arbiter/              # Deterministic rule engine
   bus/                  # Schema validation, routing
   ciso/                 # Security pattern analysis
@@ -179,19 +189,18 @@ src/governance/         # Python package (Apache 2.0)
   models/               # Pydantic data models
   audit/                # Chain-hashed audit trail
 tests/                  # pytest suite (136 passing)
-demo/                   # Interactive demo
-config/                 # Policy rules, env templates
-deploy/                 # Docker, systemd, LXC
+services/               # FastAPI service wrappers
+deploy/                 # Docker, systemd
 sandbox/                # AppArmor profiles, nftables rules
-schemas/                # JSON schemas for bus messages
-docs/                   # Architecture, ADRs, reviews
 ```
 
 ---
 
 ## License
 
-Apache License 2.0. See [LICENSE](LICENSE) for full text.
+This **specification** is Apache License 2.0. See [LICENSE](LICENSE) for full text.
+
+The reference **implementation** ([nonaxis/protocol](https://github.com/nonaxis/protocol)) is proprietary. See its LICENSE file for terms.
 
 Contributions require DCO sign-off (Developer Certificate of Origin). See [CONTRIBUTING.md](CONTRIBUTING.md).
 
