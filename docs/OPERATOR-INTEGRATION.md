@@ -279,15 +279,15 @@ When the Arbiter approves a Tier 2+ action, it issues a **time-limited, content-
 ```json
 {
   "token_id": "347e567b-...",
-  "request_id": "d3c1eed9-...",
-  "issued_at": "2026-02-12T18:20:58Z",
+  "nonce": "a1b2c3d4-...",
   "expires_at": "2026-02-12T18:25:58Z",
   "scope": {
     "action_type": "exec_unfamiliar",
     "content_hash": "a9d810f9f3734b24...",
     "allowed_hosts": ["example.com"],
     "max_duration_seconds": 60
-  }
+  },
+  "hmac_signature": "f4c8e2..."
 }
 ```
 
@@ -425,7 +425,7 @@ GOVERNANCE_BASE_DIR=/tmp/demo python demo/simple_operator_demo.py
 ### Environment Variables
 
 - `GOVERNANCE_BASE_DIR` — base directory for governance state (default: `/var/lib/governance`)
-- `OPERATOR_SIGNING_KEY` — Ed25519 signing key for bus authentication
+- `GOVERNANCE_SIGNING_KEY_OPERATOR` — HMAC signing key for bus authentication (default: `CHANGE-ME-OPERATOR`)
 - `ARBITER_URL` — Arbiter State API endpoint
 
 ### Docker Volumes

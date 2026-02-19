@@ -76,7 +76,7 @@
                 "type": "object",
                 "properties": {
                   "path": { "type": "string" },
-                  "operation": { "type": "string", "enum": ["create", "modify", "delete"] },
+                  "operation": { "type": "string", "enum": ["write", "append", "chmod", "create", "modify", "delete"] },
                   "concern": { "type": "string" }
                 }
               }

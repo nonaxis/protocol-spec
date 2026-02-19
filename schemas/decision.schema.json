@@ -43,8 +43,8 @@
         },
         "decision_method": {
           "type": "string",
-          "enum": ["deterministic", "llm_fallback", "timeout_escalation"],
-          "description": "How the decision was reached"
+          "enum": ["deterministic", "human_escalation", "timeout_escalation"],
+          "description": "How the decision was reached. Per ADR-002, there is no LLM fallback — unmatched requests escalate to a human."
         },
         "reasoning": {
           "type": "string",

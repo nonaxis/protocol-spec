@@ -218,14 +218,14 @@ token = client.get_token(request_id: str) -> Optional[dict]
 ```python
 {
     "token_id": "uuid",
+    "nonce": "uuid",
     "expires_at": "2026-02-12T15:35:00Z",  # Typically +5min from issuance
     "scope": {
         "action_type": "exec_unfamiliar",
-        "content_hash": "sha256",
+        "content_hash": "sha256-hex",
         "allowed_hosts": ["api.example.com"],
-        "permissions": ["exec", "network"]
     },
-    "signature": "hmac_sha256"
+    "hmac_signature": "hex-hmac-sha256"
 }
 ```
 
@@ -637,8 +637,8 @@ print(f"Expires: {token['expires_at']}")
 # Verify content hash
 import hashlib
 content_hash = hashlib.sha256(content).hexdigest()
-print(f"Token scope: {token['scope']['content_hash']}")
-print(f"Actual hash: {content_hash}")
+print(f"Token scope hash: {token['scope']['content_hash']}")
+print(f"Actual content hash: {content_hash}")
 ```
 
 ### State drift warnings
@@ -692,10 +692,10 @@ A: Update `GOVERNANCE_SIGNING_KEY_OPERATOR`, restart Operator instance. Old sign
 
 ## See Also
 
-- [Architecture Deep Dive](../ARCHITECTURE.md) — Three-instance design
+- [Architecture Deep Dive](ARCHITECTURE.md) — Three-instance design
 - [State API Reference](../specs/governance-api.yaml) — OpenAPI spec
-- [Policy Rules Guide](../config/README.md) — Writing Arbiter policy
-- [Token Format Spec](../docs/TOKEN-FORMAT.md) — Execution token structure
+- [Token Format ADR](decisions/ADR-006-token-gated-execution.md) — Execution token structure and canonical HMAC format
+- [Sample Policy Rules](../examples/policy_rules.sample.yaml) — Writing Arbiter policy
 
 ---
 

@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  x-implementation-status: "DESIGN TARGET — these endpoints are not yet implemented. Current PoC uses filesystem-based bus."
+  x-implementation-status: "DESIGN TARGET — these endpoints are not yet implemented. Current PoC uses filesystem-based bus with /v1/ prefix paths (e.g., /v1/review, /v1/assess, /v1/decide). The /governance/ prefix paths below are the target API for the HTTP bus migration (Phase 3)."
   title: Nonaxis API
   version: 0.1.0
   description: |
@@ -332,7 +332,7 @@ components:
               type: integer
         hmac_signature:
           type: string
-          description: HMAC-SHA256 of token_id:nonce:expires_at:scope
+          description: HMAC-SHA256 of token_id:nonce:expires_at:scope_json (see ADR-006 for canonical format)
 
     ExecuteRequest:
       type: object
