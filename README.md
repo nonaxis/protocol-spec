@@ -20,11 +20,11 @@ AI agents with system access self-govern: they decide what's safe, approve their
 
 A **protocol for governing AI agent actions before they execute**, using multi-instance architecture with separation of duties:
 
-- **Operator** proposes actions (full tools, sandboxed)
-- **CISO** reviews for security risks (read-only, different LLM provider)
+- **Operator** proposes actions (full tools, sandboxed — the only component that uses an LLM)
+- **CISO** reviews for security risks (read-only, static analysis and pattern matching — no LLM)
 - **Arbiter** enforces deterministic policy and issues execution tokens (no LLM, rule engine)
 
-The governance bus connects them via schema-validated JSON. The policy is deterministic: no LLM in the decision path. Enforcement is configurable from application-level hooks to kernel-level controls the agent cannot bypass.
+The governance bus connects them via schema-validated JSON. The entire governance pipeline is deterministic: no LLM in the review or decision path. Enforcement is configurable from application-level hooks to kernel-level controls the agent cannot bypass.
 
 ```
                         Governance Bus
@@ -39,8 +39,8 @@ The governance bus connects them via schema-validated JSON. The policy is determ
    | actions    |     | security  |     | via rules |
    |            |<----|           |     |           |
    | Full tools |     | Read-only |     | No LLM    |
-   | Sandboxed  |     | Different |     | Enforces  |
-   |            |     | provider  |     | policy    |
+   | Sandboxed  |     | Static    |     | Enforces  |
+   |            |     | analysis  |     | policy    |
    +-----------+     +-----------+     +-----------+
 ```
 
@@ -54,7 +54,7 @@ When no rule covers a situation, the Arbiter escalates to a human. When a human 
 
 2. **Deterministic policy engine** — No LLM in the enforcement decision path. Rules are explicit, auditable, and not susceptible to prompt manipulation. Unknown situations escalate to humans, never to another model.
 
-3. **Multi-instance isolation** — Operator, CISO, and Arbiter are separate processes with different credentials, different capabilities, and (optionally) different LLM providers. Compromising one doesn't compromise the others.
+3. **Multi-instance isolation** — Operator, CISO, and Arbiter are separate processes with different credentials and different capabilities. Only the Operator uses an LLM (for proposing actions). The CISO and Arbiter are fully deterministic. Compromising one doesn't compromise the others.
 
 4. **Content-hash-bound execution tokens** — The Arbiter issues time-limited, scope-pinned HMAC tokens tied to the exact action content. OS-level enforcement verifies tokens before execution. Replay attacks and token reuse are cryptographically prevented.
 
@@ -122,7 +122,7 @@ Full architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ✅ **Core protocol** — Schema-validated bus, 4-verb API, message signing  
 ✅ **Arbiter** — Deterministic rule engine, HMAC token issuance, escalation handling  
-✅ **CISO** — Pattern analyzer, security review logic  
+✅ **CISO** — Deterministic pattern analyzer, static security review (no LLM)  
 ✅ **Operator** — Risk classifier (prototype)  
 ✅ **Audit trail** — Chain-hashed JSONL with tamper detection  
 ✅ **Container deployment** — Docker Compose + systemd  
